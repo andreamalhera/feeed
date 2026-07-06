@@ -4,7 +4,7 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version_string = os.environ.get("VERSION_PLACEHOLDER", "1.9.0")
+version_string = os.environ.get("VERSION_PLACEHOLDER", "2.0.0")
 print(version_string)
 version = version_string
 
