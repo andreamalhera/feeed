@@ -3,7 +3,7 @@ name: Publish Python distributions to PyPI
 on:
   push:
     tags:
-     - '*'
+      - '*'
 
 jobs:
   build-n-publish:
@@ -34,7 +34,7 @@ jobs:
       run: |
         sed -i "s/VERSION_PLACEHOLDER/${{ steps.tag.outputs.TAG_NAME }}/g" setup.py
 
-     - name: Build binary wheel and source tarball
+    - name: Build binary wheel and source tarball
       run: python -m build
 
     - name: Publish distribution to PyPI
