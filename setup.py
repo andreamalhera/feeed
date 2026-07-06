@@ -15,7 +15,7 @@ setup(
         author = 'Andrea Maldonado',
         author_email = 'andreamalher.works@gmail.com',
         license = 'MIT',
-        url='https://github.com/lmu-dbs/feeed.git',
+        url='https://github.com/andreamalhera/feeed.git',
         long_description=long_description,
         long_description_content_type="text/markdown",
 

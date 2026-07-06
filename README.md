@@ -112,14 +112,14 @@ To include new features in this repo, first consider the following:
 If both conditions apply, move on to implementation.
 
 ### Implementing any `NewFeatures` class
-* Clone this repo to your local machine using `git clone git@github.com:lmu-dbs/feeed.git`
+* Clone this repo to your local machine using `git clone git@github.com:andreamalhera/feeed.git`
 * Include the new module containing the `new_feature` computation in `feeed/`, resulting in `feeed/new_feature.py` (e.g. `feeed/time.py`).
 * Import the new class `NewFeatures` in `feeed/feature_extractor.py` (e.g. `from .time import TimeBased as time_based`)
    * `NewFeatures` should inherit from [Feature](feeed/feature.py) to use `extract`.
    * Input for `NewFeatures` should support event-logs, as in [pm4py](https://pm4py.fit.fraunhofer.de/static/assets/api/2.7.5.1/api.html#input-pm4py-read).
    * Ensure output of the `NewFeatures` class is a dict of the sort: `{"new_feature_name_1": value1, "new_feature_name_2": value2}`.
-* To call the new class and methods, include the new `new_feature_type` (e.g. "time_based") in the [list of `feeed/feature_extractor.py`](https://github.com/lmu-dbs/feeed/blob/688cbe290d5c434f98bc9f059da0010f81ec89f1/feeed/feature_extractor.py#L21).
-    * Include the `new_feature_type` in [NEW_FEATURE_TYPE](https://github.com/lmu-dbs/feeed/blob/53d2473509d5eccb9126b7d7bd8487132afd2eb7/feeed/feature_extractor.py#L14)
+* To call the new class and methods, include the new `new_feature_type` (e.g. "time_based") in the [list of `feeed/feature_extractor.py`](https://github.com/andreamalhera/feeed/blob/688cbe290d5c434f98bc9f059da0010f81ec89f1/feeed/feature_extractor.py#L21).
+    * Include the `new_feature_type` in [NEW_FEATURE_TYPE](https://github.com/andreamalhera/feeed/blob/53d2473509d5eccb9126b7d7bd8487132afd2eb7/feeed/feature_extractor.py#L14)
 * Include the new `new_feature_type` (e.g. "time_based") and its `feature_names`s (e.g. "accumulated_time_geometric_mean") in the [Feature Type table](#feature-types).
 
 Below, see an example of pseudo-code of how to implement a new (generic) feature extraction class.
