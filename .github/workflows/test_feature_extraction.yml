@@ -19,12 +19,15 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.x
-        
+        python-version: ['3.9', '3.12', '3.14', '3.15']
+
     - name: Install feeed
       run: |
         python -m pip install --upgrade pip
         pip install .
+
+    - name: Run Pytest suite
+      run: pytest
 
     # Running the test script and comparing the output to the expected output
     - name: Run tests and compare output
@@ -32,4 +35,3 @@ jobs:
 
     - name: Compare output
       run: diff output.json test_data/expected_output.json
-    
