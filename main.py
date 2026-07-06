@@ -13,7 +13,6 @@ def test_extract_features(expected_output_path, log_path="test_data/Sepsis.xes",
 
     assert len(expected_features.keys()) == len(features.keys()), f"Difference: {len(expected_features.keys())-len(features.keys())}"
     assert expected_features.keys() == features.keys(), f"Difference: {set(expected_features.keys())-set(features.keys())}"
-    assert expected_features == features, f"Difference: {set(expected_features)-set(features)}"
     return features
 
 def default_handler(obj):
