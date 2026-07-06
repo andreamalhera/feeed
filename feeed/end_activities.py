@@ -3,7 +3,7 @@ import numpy as np
 import pm4py
 
 from .feature import Feature
-from pm4py.algo.filtering.log.end_activities import end_activities_filter
+from pm4py import get_end_activities
 from scipy import stats
 
 class EndActivities(Feature):
@@ -16,12 +16,12 @@ class EndActivities(Feature):
             self.feature_names = feature_names
 
     def log_end(log):
-        log_end = end_activities_filter.get_end_activities(
+        log_end = get_end_activities(
             pm4py.filter_event_attribute_values(
                 log, "concept:name", ["END"], level="event", retain=False
             )
         )
-        # log_end = end_activities_filter.get_end_activities(log)
+        # log_end = get_end_activities(log)
         return log_end
 
     def end_activities_occurrences(log):
