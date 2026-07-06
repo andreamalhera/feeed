@@ -3,7 +3,7 @@ import numpy as np
 import pm4py
 
 from .feature import Feature
-from pm4py.algo.filtering.log.start_activities import start_activities_filter
+from pm4py import get_start_activities
 from scipy import stats
 
 class StartActivities(Feature):
@@ -16,12 +16,12 @@ class StartActivities(Feature):
             self.feature_names = feature_names
 
     def log_start(log):
-        log_start = start_activities_filter.get_start_activities(
+        log_start = get_start_activities(
             pm4py.filter_event_attribute_values(
                 log, "concept:name", ["START"], level="event", retain=False
             )
         )
-        # log_start = start_activities_filter.get_start_activities(log)
+        # log_start = get_start_activities(log)
         return log_start
 
     def start_activities_occurrences(log):
