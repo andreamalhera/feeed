@@ -27,7 +27,7 @@ jobs:
         pip install .
 
     - name: Run Pytest suite
-      run: pytest
+      run: python -m pytest
 
     # Running the test script and comparing the output to the expected output
     - name: Run tests and compare output
