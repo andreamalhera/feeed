@@ -3,7 +3,7 @@ from feeed.feature_extractor import extract_features
 def test_extract_features():
     features = extract_features("test_data/Sepsis.xes", ['n_unique_start_activities'])
 
-    assert len(features) == 1
+    assert len(features) == 2
     assert features['n_unique_start_activities'] == 6
 
 def test_extract_features_select_group():

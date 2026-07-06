@@ -6,7 +6,7 @@ from feeed.trace_variant import TraceVariant as trace_variant
 def test_trace_length(mock_log_data):
     features = trace_variant(feature_names=['trace_variant']).extract(mock_log_data)
     print(features)
-    assert len(features) == 1
+    assert len(features) == 11
     assert set(features.keys()) == set(['kurtosis_variant_occurrence', 'mean_variant_occurrence',
                                         'ratio_most_common_variant', 'ratio_top_10_variants', 'ratio_top_1_variants',
                                         'ratio_top_20_variants', 'ratio_top_50_variants', 'ratio_top_5_variants',
