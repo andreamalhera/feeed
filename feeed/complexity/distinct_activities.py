@@ -23,7 +23,9 @@ class DistinctActivities(Feature):
 
     @classmethod
     def distinct_activities_min(cls, log):
-        return np.min([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log] + [0])
+        if len(log) == 0:
+            return 0
+        return np.min([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log])
 
     @classmethod
     def distinct_activities_max(cls, log):
