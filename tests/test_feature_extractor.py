@@ -1,3 +1,5 @@
+import pytest
+
 from feeed.feature_extractor import extract_features
 
 def test_extract_features():
@@ -25,3 +27,16 @@ def test_extract_features_select_group():
                          }
     assert len(features) == 14
     assert features == EXPECTED_FEATURES
+
+def test_extract_features_epa_subset_across_logs():
+    epa_subset = ['epa_variant_entropy', 'epa_normalized_variant_entropy',
+                  'epa_sequence_entropy', 'epa_normalized_sequence_entropy']
+
+    first = extract_features("test_data/BPI_Challenge_2013_closed_problems.xes", epa_subset)
+    sepsis = extract_features("test_data/Sepsis.xes", epa_subset)
+
+    assert sepsis['epa_variant_entropy'] == pytest.approx(40624.49329803771, rel=1e-4)
+    assert sepsis['epa_normalized_variant_entropy'] == pytest.approx(0.6957588422064969, rel=1e-4)
+    assert sepsis['epa_sequence_entropy'] == pytest.approx(76528.6794749776, rel=1e-4)
+    assert sepsis['epa_normalized_sequence_entropy'] == pytest.approx(0.5223430410751398, rel=1e-4)
+    assert sepsis['epa_variant_entropy'] != pytest.approx(first['epa_variant_entropy'])

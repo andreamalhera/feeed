@@ -2,7 +2,7 @@ import inspect
 import math
 import pandas as pd
 import pm4py
-import functools
+import weakref
 
 from ..feature import Feature
 
@@ -421,46 +421,42 @@ class Epa_based(Feature):
         else:
             return None, None
 
-    _cached_epa = None
-    _cached_graph_complexity = None
-    _cached_log_complexity = None
-    _cached_log_complexity_linear = None
-    _cached_log_complexity_exp = None
+    _cached_log_ref = None
+    _cache = {}
 
-    # Helper functions (start with _)
+    @classmethod
+    def _cached(cls, log, key, compute):
+        cached_log = cls._cached_log_ref() if cls._cached_log_ref is not None else None
+        if cached_log is not log:
+            cls._cached_log_ref = weakref.ref(log)
+            cls._cache = {}
+        if key not in cls._cache:
+            cls._cache[key] = compute()
+        return cls._cache[key]
+
     @classmethod
     def _calculate_epa(cls, log):
-        if cls._cached_epa is None:
-            cls._cached_epa = Epa_based.log_to_epa(log)
-        return cls._cached_epa
+        return cls._cached(log, "epa", lambda: Epa_based.log_to_epa(log))
 
     @classmethod
     def _calculate_graph_complexity(cls, log):
-        if cls._cached_graph_complexity is None:
-            epa = cls._calculate_epa(log)
-            cls._cached_graph_complexity = Epa_based.graph_complexity(epa)
-        return cls._cached_graph_complexity
+        return cls._cached(log, "graph_complexity",
+                           lambda: Epa_based.graph_complexity(cls._calculate_epa(log)))
 
     @classmethod
     def _calculate_log_complexity(cls, log):
-        if cls._cached_log_complexity is None:
-            epa = cls._calculate_epa(log)
-            cls._cached_log_complexity = Epa_based.log_complexity(epa)
-        return cls._cached_log_complexity
+        return cls._cached(log, "log_complexity",
+                           lambda: Epa_based.log_complexity(cls._calculate_epa(log)))
 
     @classmethod
     def _calculate_log_complexity_linear(cls, log):
-        if cls._cached_log_complexity_linear is None:
-            epa = cls._calculate_epa(log)
-            cls._cached_log_complexity_linear = Epa_based.log_complexity(epa, "linear")
-        return cls._cached_log_complexity_linear
+        return cls._cached(log, "log_complexity_linear",
+                           lambda: Epa_based.log_complexity(cls._calculate_epa(log), "linear"))
 
     @classmethod
     def _calculate_log_complexity_exp(cls, log):
-        if cls._cached_log_complexity_exp is None:
-            epa = cls._calculate_epa(log)
-            cls._cached_log_complexity_exp = Epa_based.log_complexity(epa, "exp")
-        return cls._cached_log_complexity_exp
+        return cls._cached(log, "log_complexity_exp",
+                           lambda: Epa_based.log_complexity(cls._calculate_epa(log), "exp"))
 
     @classmethod
     def epa_variant_entropy(cls, log):
@@ -500,11 +496,4 @@ class Epa_based(Feature):
     @classmethod
     def epa_normalized_sequence_entropy_exponential_forgetting(cls, log):
         log_complexity = cls._calculate_log_complexity_exp(log)
-        
-        #reset the cache
-        cls._cached_epa = None
-        cls._cached_graph_complexity = None
-        cls._cached_log_complexity = None
-        cls._cached_log_complexity_linear = None
-        cls._cached_log_complexity_exp = None
         return log_complexity[1]

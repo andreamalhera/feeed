@@ -3,8 +3,8 @@ import pytest
 
 from feeed.complexity.comparison_based import ComparisonBased as comparison_based
 
-def test_comparison_based(mock_log_data):
-    features = comparison_based(feature_names=['comparison_based']).extract(mock_log_data)
+def test_comparison_based(mock_log_data_sepsis):
+    features = comparison_based(feature_names=['comparison_based']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 7
     assert set(features.keys()) == set(['number_of_successions', 'number_of_ties',

@@ -3,8 +3,8 @@ import pytest
 
 from feeed.end_activities import EndActivities as end_activities
 
-def test_end_activities(mock_log_data):
-    features = end_activities(feature_names=['end_activities']).extract(mock_log_data)
+def test_end_activities(mock_log_data_sepsis):
+    features = end_activities(feature_names=['end_activities']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 13
     assert set(features.keys()) == set(['end_activities_iqr', 'end_activities_kurtosis',

@@ -3,8 +3,8 @@ import pytest
 
 from feeed.complexity.distinct_activities import DistinctActivities as distinct_activities
 
-def test_distinct_activities(mock_log_data):
-    features = distinct_activities(feature_names=['distinct_activities']).extract(mock_log_data)
+def test_distinct_activities(mock_log_data_sepsis):
+    features = distinct_activities(feature_names=['distinct_activities']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 7
     assert set(features.keys()) == set(['distinct_activities_min', 'distinct_activities_max',

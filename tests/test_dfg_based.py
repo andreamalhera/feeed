@@ -3,8 +3,8 @@ import pytest
 
 from feeed.complexity.dfg_based import DFGBased as dfg_based
 
-def test_dfg_based(mock_log_data):
-    features = dfg_based(feature_names=['dfg_based']).extract(mock_log_data)
+def test_dfg_based(mock_log_data_sepsis):
+    features = dfg_based(feature_names=['dfg_based']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 12
     assert set(features.keys()) == set(['n_nodes_dfg', 'n_edges_dfg', 'coeff_of_connectivity_dfg',

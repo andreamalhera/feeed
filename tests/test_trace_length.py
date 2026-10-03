@@ -3,8 +3,8 @@ import pytest
 
 from feeed.trace_length import TraceLength as trace_length
 
-def test_trace_length(mock_log_data):
-    features = trace_length(feature_names=['trace_length']).extract(mock_log_data)
+def test_trace_length(mock_log_data_sepsis):
+    features = trace_length(feature_names=['trace_length']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 29
     assert set(features.keys()) == set(['trace_len_coefficient_variation','trace_len_entropy',

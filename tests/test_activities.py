@@ -3,8 +3,8 @@ import pytest
 
 from feeed.activities import Activities as activities
 
-def test_activities(mock_log_data):
-    features = activities(feature_names=['activities']).extract(mock_log_data)
+def test_activities(mock_log_data_sepsis):
+    features = activities(feature_names=['activities']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 12
     assert set(features.keys()) == set(['activities_iqr', 'activities_kurtosis', 'activities_max',

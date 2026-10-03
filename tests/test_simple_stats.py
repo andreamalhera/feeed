@@ -1,7 +1,7 @@
 from feeed.simple_stats import SimpleStats as simple_stats
 
-def test_simple_stats(mock_log_data):
-    features = simple_stats(feature_names=['simple_stats']).extract(mock_log_data)
+def test_simple_stats(mock_log_data_sepsis):
+    features = simple_stats(feature_names=['simple_stats']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 4
     assert features['n_events'] == 15214

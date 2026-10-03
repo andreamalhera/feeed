@@ -3,8 +3,8 @@ import pytest
 
 from feeed.start_activities import StartActivities as start_activities
 
-def test_start_activities(mock_log_data):
-    features = start_activities(feature_names=['start_activities']).extract(mock_log_data)
+def test_start_activities(mock_log_data_sepsis):
+    features = start_activities(feature_names=['start_activities']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 13
     assert set(features.keys()) == set(['n_unique_start_activities', 'start_activities_iqr',

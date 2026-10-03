@@ -3,8 +3,8 @@ import pytest
 
 from feeed.complexity.eventropies import Eventropies as eventropies
 
-def test_eventropies(mock_log_data):
-    features = eventropies(feature_names=['eventropies']).extract(mock_log_data)
+def test_eventropies(mock_log_data_sepsis):
+    features = eventropies(feature_names=['eventropies']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 16
     assert set(features.keys()) == set(['eventropy_global_block', 'eventropy_global_block_flattened',
