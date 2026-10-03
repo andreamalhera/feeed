@@ -1,5 +1,6 @@
 import pandas as pd
 import subprocess
+from .feature import Feature
 from .simple_stats import SimpleStats as simple_stats
 from .trace_length import TraceLength as trace_length
 from .trace_variant import TraceVariant as trace_variant
@@ -101,6 +102,7 @@ def read_pm4py_log(filename=None, verbose=False):
 def extract_features(event_logs_path, feature_types=None):
     log_name = event_logs_path.rsplit("/", 1)[-1]
     log = read_pm4py_log(event_logs_path)
+    Feature.check_log(log, log_name)
 
     if feature_types is None:
         feature_types = FEATURE_TYPES

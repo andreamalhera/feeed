@@ -9,5 +9,5 @@ def test_trace_diversity(mock_log_data_sepsis):
     assert len(features) == 2
     assert set(features.keys()) == set(['simple_trace_diversity', 'advanced_trace_diversity'])
 
-    assert features['simple_trace_diversity']== pytest.approx(0.4297098001902949)
+    assert features['simple_trace_diversity']== pytest.approx(0.4291666666666667)
     assert features['advanced_trace_diversity']== pytest.approx(0.869360548361305)

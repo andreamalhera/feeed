@@ -31,6 +31,7 @@ class TimeBased(Feature):
             self.feature_names = feature_names
 
     def extract(self, log):
+        Feature.check_log(log)
         feature_names=self.feature_names
 
         output = {}
