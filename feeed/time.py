@@ -55,9 +55,9 @@ class TimeBased(Feature):
             log = log.copy()
 
         try:
-            log[time_column] = pd.to_datetime(log[time_column])
+            log[time_column] = pd.to_datetime(log[time_column], utc=True)
         except:
-            log[time_column] = pd.to_datetime(log[time_column], format="mixed")
+            log[time_column] = pd.to_datetime(log[time_column], format="mixed", utc=True)
         log = log.sort_values(by=[time_column]).reset_index(drop=True)
         group = log.groupby("case:concept:name", as_index=False, observed=True, group_keys=False)
         return group, log.index, time_column, log

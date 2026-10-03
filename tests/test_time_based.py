@@ -142,3 +142,22 @@ def test_timestamps_converted_to_utc(mock_log_data_sepsis):
     timestamps = [pd.Timestamp(event["time:timestamp"]) for event in traces["HS"]]
     start = timestamps.index(pd.Timestamp("2014-10-25T20:57:10", tz="UTC"))
     assert (timestamps[start + 1] - timestamps[start]).total_seconds() == 32570.0
+
+def test_time_based_mixed_utc_offsets():
+    from datetime import datetime, timedelta, timezone
+    from pm4py.objects.log.obj import Event, EventLog, Trace
+
+    def event(activity, timestamp):
+        return Event({"concept:name": activity, "time:timestamp": timestamp})
+
+    trace = Trace([event("a", datetime(2014, 10, 25, 22, 57, 10, tzinfo=timezone(timedelta(hours=2)))),
+                   event("b", datetime(2014, 10, 26, 7, 0, 0, tzinfo=timezone(timedelta(hours=1))))],
+                  attributes={"concept:name": "HS"})
+    log = EventLog([trace])
+
+    utc = time_based(feature_names=['execution_time', 'within_day']).extract(log)
+    local = time_based(feature_names=['within_day'], tz='Europe/Amsterdam').extract(log)
+
+    assert utc['execution_time_max'] == 32570.0
+    assert (utc['within_day_min'], utc['within_day_max']) == (21600.0, 75430.0)
+    assert (local['within_day_min'], local['within_day_max']) == (25200.0, 82630.0)
