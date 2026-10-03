@@ -99,7 +99,11 @@ def read_pm4py_log(filename=None, verbose=False):
 
     return pm4py_log
 
-def extract_features(event_logs_path, feature_types=None):
+def extract_features(event_logs_path, feature_types=None, tz=None):
+    """
+    tz: IANA time zone name (e.g. "Europe/Amsterdam") used by time_based features such as
+        within_day. Timestamps are read as UTC, so without tz within_day is the UTC time of day.
+    """
     log_name = event_logs_path.rsplit("/", 1)[-1]
     log = read_pm4py_log(event_logs_path)
     Feature.check_log(log, log_name)
@@ -114,7 +118,8 @@ def extract_features(event_logs_path, feature_types=None):
         start_feat = dt.now()
         ft_type = feature_type(ft_name)
 
-        feature_values = eval(f"{ft_type}(feature_names=['{ft_name}']).extract(log)")
+        ft_kwargs = {"tz": tz} if ft_type == "time_based" else {}
+        feature_values = eval(ft_type)(feature_names=[ft_name], **ft_kwargs).extract(log)
         features = {**features, **feature_values}
 
         log_info =  f"     INFO: {log_name} starting at {len(features)}, {ft_name} from {ft_type} took {dt.now()-start_feat} sec, "

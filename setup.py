@@ -23,7 +23,7 @@ setup(
 
         install_requires=[
             'tqdm==4.65.0',
-            'pm4py>=2.7.2',
+            'pm4py>=2.7.23.4',
             'scipy>=1.10.1',
             'Levenshtein==0.27.3',
             'editdistance>=0.6.2',

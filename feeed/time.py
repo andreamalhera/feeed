@@ -16,7 +16,7 @@ All the time features are currently measured in seconds, and they include:
 - `execution_time`: execution time of an event w.r.t. to the previous one
 - `accumulated_time`: accumulated time of an event w.r.t. to the first one from a trace
 - `remaining_time`: remaining time of an event w.r.t. to the last one from a trace
-- `within_day`: time within the day 
+- `within_day`: time within the day, in UTC unless an IANA time zone is passed as `tz` parameter (e.g. tz='Europe/Amsterdam')
 
 Essentially, there are methods that accept `group` or `X` as arguments. The former consists of a trace (i.e., grouped by case id) since we evaluate, for instance, the event timestamp with the previous one. The latter consists of the whole event log, since some operations can be performed element-wise (e.g., extracting the weekday from a timestamp column).
 """
@@ -92,8 +92,11 @@ class TimeBased(Feature):
 
     @classmethod
     def within_day(cls, log, tz=None, **kwargs):
-        # pm4py normalizes timestamps to UTC regardless of their original recorded
-        # offset, so recovering local time-of-day requires the log's own IANA tz.
+        # pm4py (>=2.7.23.4) converts timestamps to UTC and drops their original offset,
+        # so recovering local time-of-day requires the log's own IANA tz.
+        # E.g. for Sepsis ("+02:00" in summer, "+01:00" in winter) pass tz="Europe/Amsterdam":
+        # TimeBased(feature_names=['within_day'], tz="Europe/Amsterdam").extract(log), or
+        # extract_features("test_data/Sepsis.xes", ['within_day'], tz="Europe/Amsterdam").
         _, _, time_col, log = TimeBased.preprocess(log)
         timestamps = log[time_col]
         if tz is not None:

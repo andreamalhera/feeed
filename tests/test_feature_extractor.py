@@ -40,3 +40,13 @@ def test_extract_features_epa_subset_across_logs():
     assert sepsis['epa_sequence_entropy'] == pytest.approx(76528.6794749776, rel=1e-4)
     assert sepsis['epa_normalized_sequence_entropy'] == pytest.approx(0.5223430410751398, rel=1e-4)
     assert sepsis['epa_variant_entropy'] != pytest.approx(first['epa_variant_entropy'])
+
+def test_extract_features_within_day_tz():
+    utc = extract_features("test_data/Sepsis.xes", ['n_events', 'within_day'])
+    local = extract_features("test_data/Sepsis.xes", ['n_events', 'within_day'], tz='Europe/Amsterdam')
+
+    assert utc['within_day_mode'] == pytest.approx(21600.0)
+    assert utc['within_day_mean'] == pytest.approx(41330.543183909555, rel=1e-2)
+    assert local['within_day_mode'] == pytest.approx(28800.0)
+    assert local['within_day_mean'] == pytest.approx(44411.8630209018, rel=1e-2)
+    assert utc['n_events'] == local['n_events'] == 15214
