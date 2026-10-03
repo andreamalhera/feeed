@@ -129,3 +129,16 @@ def test_time_based(mock_log_data_sepsis):
     assert features['within_day_entropy'] == pytest.approx(9.501009299480838, rel=1e-2)
     assert features['within_day_skewness_hist'] == pytest.approx(0.7185535544033509, rel=1e-2)
     assert features['within_day_kurtosis_hist'] == pytest.approx(0.6172758296143384, rel=1e-2)
+
+
+# Guards against pm4py < 2.7.23.4, which relabeled XES offsets as UTC instead of converting
+def test_timestamps_converted_to_utc(mock_log_data_sepsis):
+    traces = {trace.attributes["concept:name"]: trace for trace in mock_log_data_sepsis}
+
+    first = pd.Timestamp(traces["A"][0]["time:timestamp"])
+    assert first == pd.Timestamp("2014-10-22T09:15:41", tz="UTC")
+
+    # This case crosses the end of DST: 2014-10-25T22:57:10+02:00 -> 2014-10-26T07:00:00+01:00
+    timestamps = [pd.Timestamp(event["time:timestamp"]) for event in traces["HS"]]
+    start = timestamps.index(pd.Timestamp("2014-10-25T20:57:10", tz="UTC"))
+    assert (timestamps[start + 1] - timestamps[start]).total_seconds() == 32570.0
