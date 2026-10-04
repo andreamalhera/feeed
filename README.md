@@ -114,6 +114,21 @@ features = extract_features("test_data/Sepsis.xes", ["within_day"], tz="Europe/A
 ```
 `within_day_mode` is then 28800.0 (08:00 local time) instead of 21600.0 (06:00 UTC).
 
+#### Example 5:
+Event logs without traces, or whose traces contain no events, raise an `EmptyLogError`. To extract features from several event logs and skip empty ones:
+```python
+from feeed import EmptyLogError
+from feeed.feature_extractor import extract_features
+
+results = []
+for log_path in ["test_data/Sepsis.xes", "test_data/BPI_Challenge_2013_closed_problems.xes"]:
+    try:
+        results.append(extract_features(log_path))
+    except EmptyLogError as e:
+        print(f"Skipping: {e}")
+```
+`EmptyLogError` is a subclass of `ValueError`, but invalid feature names still raise a plain `ValueError`, so a typo stops the run instead of skipping every log.
+
 ## Extending Features
 This tutorial is for extending this tool to include additional features (e.g. time-based). As an example for this tutorial, we focus on the example of time-based features. The `feeed/time.py` script contains the class `TimeBased`, which extracts features from timestamps. FEEED focuses and extracts features of the whole log only (e.g., time within the day).
 
@@ -132,6 +147,7 @@ If both conditions apply, move on to implementation.
    * `NewFeatures` should inherit from [Feature](feeed/feature.py) to use `extract`.
    * Input for `NewFeatures` should support event-logs, as in [pm4py](https://pm4py.fit.fraunhofer.de/static/assets/api/2.7.5.1/api.html#input-pm4py-read).
    * Ensure output of the `NewFeatures` class is a dict of the sort: `{"new_feature_name_1": value1, "new_feature_name_2": value2}`.
+   * Feature methods can assume a log with at least one event: `extract` calls `Feature.check_log`, which raises `EmptyLogError` otherwise. If `NewFeatures` overrides `extract`, call `Feature.check_log(log)` first.
 * To call the new class and methods, include the new `new_feature_type` (e.g. "time_based") in the [list of `feeed/feature_extractor.py`](https://github.com/andreamalhera/feeed/blob/688cbe290d5c434f98bc9f059da0010f81ec89f1/feeed/feature_extractor.py#L21).
     * Include the `new_feature_type` in [NEW_FEATURE_TYPE](https://github.com/andreamalhera/feeed/blob/53d2473509d5eccb9126b7d7bd8487132afd2eb7/feeed/feature_extractor.py#L14)
 * Include the new `new_feature_type` (e.g. "time_based") and its `feature_names`s (e.g. "accumulated_time_geometric_mean") in the [Feature Type table](#feature-types).
