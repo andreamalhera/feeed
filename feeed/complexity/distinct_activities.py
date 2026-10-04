@@ -23,19 +23,19 @@ class DistinctActivities(Feature):
 
     @classmethod
     def distinct_activities_min(cls, log):
-        return np.min([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log] + [0])
+        return np.min([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log])
 
     @classmethod
     def distinct_activities_max(cls, log):
-        return np.max([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log] + [0])
+        return np.max([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log])
 
     @classmethod
     def distinct_activities_mean(cls, log):
-        return np.mean([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log] + [0])
+        return np.mean([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log])
 
     @classmethod
     def distinct_activities_std(cls, log):
-        return np.std([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log] + [0])
+        return np.std([len(DistinctActivities.distinct_activities_in_trace(trace)) for trace in log])
 
     @classmethod
     def event_density(cls, log):

@@ -3,8 +3,8 @@ import pytest
 
 from feeed.complexity.repetitions import Repetitions as repetitions
 
-def test_repetitions(mock_log_data):
-    features = repetitions(feature_names=['repetitions']).extract(mock_log_data)
+def test_repetitions(mock_log_data_sepsis):
+    features = repetitions(feature_names=['repetitions']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 8
     assert set(features.keys()) == set(['n_traces_with_loop', 'avg_traces_with_loop',

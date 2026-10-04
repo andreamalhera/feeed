@@ -15,6 +15,7 @@ class DFGBased(Feature):
             self.feature_names = feature_names
 
     def extract(self, log):
+        Feature.check_log(log)
         dfg = DFGBased.directly_follows_graph(log)
         output = {}
         for feature_name in self.feature_names:
@@ -23,9 +24,7 @@ class DFGBased(Feature):
         return output
 
     def directly_follows_graph(log):
-        # check if the event log contains any traces
-        if len(log) == 0:
-            return None
+        Feature.check_log(log)
         # calculate the event log's level of detail
         directly_follows_graph = networkx.DiGraph()
         # create two special nodes marking the start and the end of the traces

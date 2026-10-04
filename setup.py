@@ -4,7 +4,7 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version_string = os.environ.get("VERSION_PLACEHOLDER", "2.1.0")
+version_string = os.environ.get("VERSION_PLACEHOLDER", "2.2.0")
 print(version_string)
 version = version_string
 
@@ -19,11 +19,11 @@ setup(
         long_description=long_description,
         long_description_content_type="text/markdown",
 
-        python_requires='>=3.9',
+        python_requires='>=3.10',
 
         install_requires=[
             'tqdm==4.65.0',
-            'pm4py>=2.7.2',
+            'pm4py>=2.7.23.4',
             'scipy>=1.10.1',
             'Levenshtein==0.27.3',
             'editdistance>=0.6.2',
@@ -35,7 +35,6 @@ setup(
             'Intended Audience :: Science/Research',
             'Topic :: Software Development',
             'License :: OSI Approved :: MIT License',
-            'Programming Language :: Python :: 3.9',
             'Programming Language :: Python :: 3.10',
             'Programming Language :: Python :: 3.11',
             'Programming Language :: Python :: 3.12',

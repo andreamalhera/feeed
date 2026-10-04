@@ -16,21 +16,26 @@ All the time features are currently measured in seconds, and they include:
 - `execution_time`: execution time of an event w.r.t. to the previous one
 - `accumulated_time`: accumulated time of an event w.r.t. to the first one from a trace
 - `remaining_time`: remaining time of an event w.r.t. to the last one from a trace
-- `within_day`: time within the day 
+- `within_day`: time within the day, in UTC unless an IANA time zone is passed as `tz` parameter (e.g. tz='Europe/Amsterdam')
 
+Each of them returns the statistics in `TIME_STATS` (e.g. `within_day_min`), which can also be selected individually by name.
 Essentially, there are methods that accept `group` or `X` as arguments. The former consists of a trace (i.e., grouped by case id) since we evaluate, for instance, the event timestamp with the previous one. The latter consists of the whole event log, since some operations can be performed element-wise (e.g., extracting the weekday from a timestamp column).
+Every statistic is also a class method of its own, like trace_len_min in TraceLength.
 """
 class TimeBased(Feature):
+    TIME_FEATURES = ["accumulated_time", "execution_time", "remaining_time", "within_day"]
+
     def __init__(self, feature_names='time_based', tz=None):
         self.feature_type="time_based"
         self.tz = tz
         self.available_class_methods = dict(inspect.getmembers(TimeBased, predicate=inspect.ismethod))
         if self.feature_type in feature_names:
-            self.feature_names = [*self.available_class_methods.keys()]
+            self.feature_names = TimeBased.TIME_FEATURES
         else:
             self.feature_names = feature_names
 
     def extract(self, log):
+        Feature.check_log(log)
         feature_names=self.feature_names
 
         output = {}
@@ -54,9 +59,9 @@ class TimeBased(Feature):
             log = log.copy()
 
         try:
-            log[time_column] = pd.to_datetime(log[time_column])
+            log[time_column] = pd.to_datetime(log[time_column], utc=True)
         except:
-            log[time_column] = pd.to_datetime(log[time_column], format="mixed")
+            log[time_column] = pd.to_datetime(log[time_column], format="mixed", utc=True)
         log = log.sort_values(by=[time_column]).reset_index(drop=True)
         group = log.groupby("case:concept:name", as_index=False, observed=True, group_keys=False)
         return group, log.index, time_column, log
@@ -91,14 +96,31 @@ class TimeBased(Feature):
 
     @classmethod
     def within_day(cls, log, tz=None, **kwargs):
-        # pm4py normalizes timestamps to UTC regardless of their original recorded
-        # offset, so recovering local time-of-day requires the log's own IANA tz.
+        # pm4py (>=2.7.23.4) converts timestamps to UTC and drops their original offset,
+        # so recovering local time-of-day requires the log's own IANA tz.
+        # E.g. for Sepsis ("+02:00" in summer, "+01:00" in winter) pass tz="Europe/Amsterdam":
+        # TimeBased(feature_names=['within_day'], tz="Europe/Amsterdam").extract(log), or
+        # extract_features("test_data/Sepsis.xes", ['within_day'], tz="Europe/Amsterdam").
         _, _, time_col, log = TimeBased.preprocess(log)
         timestamps = log[time_col]
         if tz is not None:
             timestamps = timestamps.dt.tz_convert(tz)
         within_days = pd.to_timedelta(timestamps.dt.time.astype(str)).dt.total_seconds().values
         return TimeBased.postprocess(log, within_days, "within_day")
+
+TIME_STATS = ["min", "max", "mean", "median", "mode", "std", "variance", "q1", "q3", "iqr",
+              "geometric_mean", "geometric_std", "harmonic_mean", "skewness", "kurtosis",
+              "coefficient_variation", "entropy", "skewness_hist", "kurtosis_hist"]
+
+def add_stat_method(time_feature, stat):
+    def stat_method(cls, log, tz=None, **kwargs):
+        return getattr(cls, time_feature)(log, tz=tz)[f"{time_feature}_{stat}"]
+    stat_method.__name__ = f"{time_feature}_{stat}"
+    setattr(TimeBased, stat_method.__name__, classmethod(stat_method))
+
+for time_feature in TimeBased.TIME_FEATURES:
+    for stat in TIME_STATS:
+        add_stat_method(time_feature, stat)
 
 warnings.filterwarnings("ignore")
 

@@ -3,8 +3,8 @@ import pytest
 
 from feeed.trace_variant import TraceVariant as trace_variant
 
-def test_trace_variant(mock_log_data):
-    features = trace_variant(feature_names=['trace_variant']).extract(mock_log_data)
+def test_trace_variant(mock_log_data_sepsis):
+    features = trace_variant(feature_names=['trace_variant']).extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 15
     assert set(features.keys()) == set(['kurtosis_variant_occurrence', 'mean_variant_occurrence',

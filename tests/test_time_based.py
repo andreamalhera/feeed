@@ -1,11 +1,12 @@
+import numpy as np
 import pandas as pd
 import pytest
 
 from feeed.time import TimeBased as time_based
 
 
-def test_time_based(mock_log_data):
-    features = time_based(feature_names=['time_based'], tz='Europe/Amsterdam').extract(mock_log_data)
+def test_time_based(mock_log_data_sepsis):
+    features = time_based(feature_names=['time_based'], tz='Europe/Amsterdam').extract(mock_log_data_sepsis)
     print(features)
     assert len(features) == 76
     assert set(features.keys()) == set(['accumulated_time_min', 'accumulated_time_max',
@@ -129,3 +130,45 @@ def test_time_based(mock_log_data):
     assert features['within_day_entropy'] == pytest.approx(9.501009299480838, rel=1e-2)
     assert features['within_day_skewness_hist'] == pytest.approx(0.7185535544033509, rel=1e-2)
     assert features['within_day_kurtosis_hist'] == pytest.approx(0.6172758296143384, rel=1e-2)
+
+
+# Guards against pm4py < 2.7.23.4, which relabeled XES offsets as UTC instead of converting
+def test_timestamps_converted_to_utc(mock_log_data_sepsis):
+    traces = {trace.attributes["concept:name"]: trace for trace in mock_log_data_sepsis}
+
+    first = pd.Timestamp(traces["A"][0]["time:timestamp"])
+    assert first == pd.Timestamp("2014-10-22T09:15:41", tz="UTC")
+
+    # This case crosses the end of DST: 2014-10-25T22:57:10+02:00 -> 2014-10-26T07:00:00+01:00
+    timestamps = [pd.Timestamp(event["time:timestamp"]) for event in traces["HS"]]
+    start = timestamps.index(pd.Timestamp("2014-10-25T20:57:10", tz="UTC"))
+    assert (timestamps[start + 1] - timestamps[start]).total_seconds() == 32570.0
+
+def test_time_based_mixed_utc_offsets():
+    from datetime import datetime, timedelta, timezone
+    from pm4py.objects.log.obj import Event, EventLog, Trace
+
+    def event(activity, timestamp):
+        return Event({"concept:name": activity, "time:timestamp": timestamp})
+
+    trace = Trace([event("a", datetime(2014, 10, 25, 22, 57, 10, tzinfo=timezone(timedelta(hours=2)))),
+                   event("b", datetime(2014, 10, 26, 7, 0, 0, tzinfo=timezone(timedelta(hours=1))))],
+                  attributes={"concept:name": "HS"})
+    log = EventLog([trace])
+
+    utc = time_based(feature_names=['execution_time', 'within_day']).extract(log)
+    local = time_based(feature_names=['within_day'], tz='Europe/Amsterdam').extract(log)
+
+    assert utc['execution_time_max'] == 32570.0
+    assert (utc['within_day_min'], utc['within_day_max']) == (21600.0, 75430.0)
+    assert (local['within_day_min'], local['within_day_max']) == (25200.0, 82630.0)
+
+def test_time_based_single_statistics(mock_log_data_sepsis):
+    from feeed.time import TIME_STATS, meta
+    assert list(meta(np.array([1.0, 2.0, 4.0])).keys()) == TIME_STATS
+
+    groups = time_based(feature_names=['within_day', 'execution_time']).extract(mock_log_data_sepsis)
+    names = ['within_day_min', 'within_day_mode', 'execution_time_max', 'execution_time_kurtosis_hist']
+    single = time_based(feature_names=names).extract(mock_log_data_sepsis)
+
+    assert single == {name: groups[name] for name in names}
