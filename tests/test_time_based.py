@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -161,3 +162,13 @@ def test_time_based_mixed_utc_offsets():
     assert utc['execution_time_max'] == 32570.0
     assert (utc['within_day_min'], utc['within_day_max']) == (21600.0, 75430.0)
     assert (local['within_day_min'], local['within_day_max']) == (25200.0, 82630.0)
+
+def test_time_based_single_statistics(mock_log_data_sepsis):
+    from feeed.time import TIME_STATS, meta
+    assert list(meta(np.array([1.0, 2.0, 4.0])).keys()) == TIME_STATS
+
+    groups = time_based(feature_names=['within_day', 'execution_time']).extract(mock_log_data_sepsis)
+    names = ['within_day_min', 'within_day_mode', 'execution_time_max', 'execution_time_kurtosis_hist']
+    single = time_based(feature_names=names).extract(mock_log_data_sepsis)
+
+    assert single == {name: groups[name] for name in names}

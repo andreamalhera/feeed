@@ -50,3 +50,13 @@ def test_extract_features_within_day_tz():
     assert local['within_day_mode'] == pytest.approx(28800.0)
     assert local['within_day_mean'] == pytest.approx(44411.8630209018, rel=1e-2)
     assert utc['n_events'] == local['n_events'] == 15214
+
+def test_extract_features_time_statistics():
+    features = extract_features("test_data/Sepsis.xes", ['n_events', 'within_day_min', 'execution_time_max'])
+
+    assert set(features) == {'log', 'n_events', 'within_day_min', 'execution_time_max'}
+    assert features['within_day_min'] == pytest.approx(0.0)
+    assert features['execution_time_max'] == pytest.approx(36051318.0)
+
+    with pytest.raises(ValueError):
+        extract_features("test_data/Sepsis.xes", ['within_day_foo'])
