@@ -1,5 +1,6 @@
 import inspect
 import numpy as np
+import editdistance
 
 from pm4py.algo.filtering.log.variants import variants_filter
 from ..feature import Feature
@@ -24,4 +25,8 @@ class TraceDiversity(Feature):
     @classmethod
     def advanced_trace_diversity(cls, log):
         support = variants_filter.get_variants(log)
-        return ComparisonBased.average_edit_distance(support) / TraceLength.trace_len_mean(log)
+        sum_of_edit_distances = 0
+        for trace1 in support:
+            for trace2 in support:
+                sum_of_edit_distances += editdistance.eval(trace1, trace2)
+        return sum_of_edit_distances / (len(support) * (len(support) - 1) * TraceLength.trace_len_mean(log))
