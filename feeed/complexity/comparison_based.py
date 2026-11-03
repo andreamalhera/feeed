@@ -19,6 +19,9 @@ class ComparisonBased(Feature):
     def consecutive_pairs(sequence):
         return [(sequence[i-1], sequence[i]) for i in range(1, len(sequence))]
 
+    def consecutive_pairs_raw(trace):
+        return [(trace[i-1]["concept:name"], trace[i]["concept:name"]) for i in range(1, len(trace))]
+
     def log_as_multiset(log):
         multiset = dict()
         for trace in log:
@@ -30,7 +33,7 @@ class ComparisonBased(Feature):
     def number_of_successions(cls, log):
         set_of_successions = set()
         for trace in log:
-            set_of_successions.update(ComparisonBased.consecutive_pairs(trace))
+            set_of_successions.update(ComparisonBased.consecutive_pairs_raw(trace))
         return len(set_of_successions)
 
     @classmethod
