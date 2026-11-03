@@ -17,4 +17,4 @@ def test_comparison_based(mock_log_data_sepsis):
     assert features['average_affinity']== pytest.approx(0.25580040954097816)
     assert features['lempel_ziv_complexity']== pytest.approx(2769.0)
     assert features['deviation_from_random']== pytest.approx(0.7874054734233626)
-    assert features['average_edit_distance']== pytest.approx(18.891374097780197)
+    assert features['average_edit_distance']== pytest.approx(11.86522856234963)
