@@ -104,7 +104,7 @@
  "n_traces_with_loop": 421,
  "n_traces_with_repetition": 723,
  "average_affinity": 0.25580040954097816,
- "average_edit_distance": 18.891374097780197,
+ "average_edit_distance": 11.86522856234963,
  "deviation_from_random": 0.7874054734233626,
  "lempel_ziv_complexity": 2769,
  "number_of_successions": 115,

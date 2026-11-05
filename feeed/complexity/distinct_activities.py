@@ -41,6 +41,8 @@ class DistinctActivities(Feature):
     def event_density(cls, log):
         avg_distinct_activities_per_trace = DistinctActivities.distinct_activities_mean(log)
         avg_trace_length = TraceLength.trace_len_mean(log)
+        if avg_trace_length == 0:
+            return 0
         return avg_distinct_activities_per_trace / avg_trace_length
 
     @classmethod
@@ -53,7 +55,11 @@ class DistinctActivities(Feature):
                 # calculate the overlap between both sets
                 intersection = events_in_trace_1.intersection(events_in_trace_2)
                 union = events_in_trace_1.union(events_in_trace_2)
-                overlap += len(intersection) / len(union)
+                if len(union) == 0:
+                    # both traces are empty and have no activities in common
+                    overlap += 0
+                else:
+                    overlap += len(intersection) / len(union)
         return 1 - (overlap / (len(log) ** 2))
 
     @classmethod
