@@ -127,6 +127,10 @@ class ComparisonBased(Feature):
             for event1, event2 in ComparisonBased.consecutive_pairs(trace):
                 neighborhood_frequencies[event1][event2] += trace_frequency
                 total_number_of_neighborhoods += trace_frequency
+        # catch the case where the event log does not contain any events
+        # in this case, the event log is exactly the random event log
+        if total_number_of_neighborhoods == 0:
+            return 1
         # calculate the inverse deviation from random
         random_neighborhood_frequencies = total_number_of_neighborhoods / (len(activity_names)**2)
         inverse_dev_random = 0
