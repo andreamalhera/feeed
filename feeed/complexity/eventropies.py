@@ -26,7 +26,7 @@ class Eventropies(Feature):
         k_sub_counts = Counter(all_k_object_substrings)
         total_k_substrings = len(all_k_object_substrings)
 
-        k_substring_entropy = sum((count / total_k_substrings) * math.log2(count / total_k_substrings) for count in k_sub_counts.values()) 
+        k_substring_entropy = sum((count / total_k_substrings) * math.log2(count / total_k_substrings) for count in k_sub_counts.values())
         return round(-k_substring_entropy,3)
 
     # Helper functions for kNN eventropy
@@ -68,7 +68,8 @@ class Eventropies(Feature):
             distances.sort(key=lambda x: x)
 
             filtered_distances = [d for d in distances if d != 0]
-            neighbour_list.append(filtered_distances[k-1])
+            if len(neighbour_list) >= k:
+                neighbour_list.append(filtered_distances[k-1])
 
         return neighbour_list
 
